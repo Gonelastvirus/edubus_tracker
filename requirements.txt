@@ -14,7 +14,7 @@ maturin==1.9.3
 passlib==1.7.4
 pyasn1==0.6.1
 pycparser==2.22
-pydantic==2.5.0
+pydantic==1.10.12
 pydantic_core==2.14.1
 python-dotenv==1.0.0
 python-jose==3.3.0
