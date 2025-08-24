@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - School Bus Tracking{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📚 API Documentation</h2>
+    <p>Complete reference for the School Bus Tracking API endpoints, parameters, and responses.</p>
+</div>
+
+<div class="card">
+    <h2>🔐 Authentication</h2>
+    <p>All protected endpoints require JWT authentication. Include the token in the Authorization header:</p>
+    <div class="api-endpoint">
+        <code>Authorization: Bearer YOUR_JWT_TOKEN</code>
+    </div>
+
+    <div class="api-endpoint method-post">
+        <h4>POST /login</h4>
+        <p>Authenticate user and receive JWT token</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "username": "student123",
+  "password": "password",
+  "user_type": "student"  // or "admin"
+}</code></pre>
+        <strong>Response:</strong>
+        <pre><code>{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "token_type": "bearer",
+  "user_type": "student"
+}</code></pre>
+    </div>
+</div>
+
+<div class="card">
+    <h2>👨‍💼 Admin APIs</h2>
+    <p>Administrative endpoints for managing the system (requires admin authentication):</p>
+
+    <div class="api-endpoint method-post">
+        <h4>POST /admin/buses</h4>
+        <p>Create a new bus</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "bus_number": "BUS001",
+  "driver_name": "John Doe",
+  "driver_phone": "+1234567890"
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /admin/buses</h4>
+        <p>List all buses</p>
+        <strong>Response:</strong>
+        <pre><code>[
+  {
+    "id": 1,
+    "bus_number": "BUS001",
+    "driver_name": "John Doe",
+    "driver_phone": "+1234567890"
+  }
+]</code></pre>
+    </div>
+
+    <div class="api-endpoint method-post">
+        <h4>POST /admin/stations</h4>
+        <p>Create a new station</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "name": "Main Street Stop",
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "bus_id": 1,
+  "order_number": 1
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /admin/stations/{bus_id}</h4>
+        <p>List stations for a specific bus</p>
+        <strong>Response:</strong>
+        <pre><code>[
+  {
+    "id": 1,
+    "name": "Main Street Stop",
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "bus_id": 1,
+    "order_number": 1
+  }
+]</code></pre>
+    </div>
+
+    <div class="api-endpoint method-put">
+        <h4>PUT /admin/stations/{station_id}</h4>
+        <p>Update station information</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "name": "Updated Station Name",
+  "latitude": 40.7130,
+  "longitude": -74.0065
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-delete">
+        <h4>DELETE /admin/stations/{station_id}</h4>
+        <p>Delete a station</p>
+        <strong>Response:</strong>
+        <pre><code>{
+  "message": "Station deleted successfully"
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-post">
+        <h4>POST /admin/students</h4>
+        <p>Create a new student account</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "name": "Jane Smith",
+  "username": "jane123",
+  "password": "securepassword",
+  "assigned_bus_id": 1,
+  "assigned_station_id": 1
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /admin/students</h4>
+        <p>List all students</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🎓 Student APIs</h2>
+    <p>Student endpoints for tracking buses (requires student authentication):</p>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /student/stations/{bus_id}</h4>
+        <p>Get stations with real-time status and ETA</p>
+        <strong>Response:</strong>
+        <pre><code>[
+  {
+    "id": 1,
+    "name": "Main Street Stop",
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "bus_id": 1,
+    "order_number": 1,
+    "status": "approaching",  // "passed", "approaching", "waiting"
+    "eta_minutes": 5
+  }
+]</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /student/bus/{bus_id}</h4>
+        <p>Get bus information and driver details</p>
+        <strong>Response:</strong>
+        <pre><code>{
+  "id": 1,
+  "bus_number": "BUS001",
+  "driver_name": "John Doe",
+  "driver_phone": "+1234567890"
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /student/bus/{bus_id}/location</h4>
+        <p>Get latest bus GPS location</p>
+        <strong>Response:</strong>
+        <pre><code>{
+  "id": 123,
+  "bus_id": 1,
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "timestamp": "2025-01-09T10:30:00Z"
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /student/my-bus</h4>
+        <p>Get information about the student's assigned bus</p>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /student/my-station</h4>
+        <p>Get status of the student's assigned station</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🚌 Bus Hardware APIs</h2>
+    <p>Endpoints for Arduino hardware to send GPS updates:</p>
+
+    <div class="api-endpoint method-post">
+        <h4>POST /bus/update</h4>
+        <p>Send GPS location update from bus hardware</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "bus_id": 1,
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "timestamp": "2025-01-09T10:30:00Z"  // optional
+}</code></pre>
+        <strong>Response:</strong>
+        <pre><code>{
+  "id": 123,
+  "bus_id": 1,
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "timestamp": "2025-01-09T10:30:00Z"
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /bus/locations/{bus_id}</h4>
+        <p>Get location history for a bus</p>
+        <strong>Query Parameters:</strong>
+        <ul>
+            <li><code>limit</code> - Number of records to return (default: 50)</li>
+        </ul>
+    </div>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /bus/health</h4>
+        <p>Health check endpoint for bus hardware</p>
+        <strong>Response:</strong>
+        <pre><code>{
+  "status": "ok",
+  "message": "Bus API is running"
+}</code></pre>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🔧 System APIs</h2>
+    <p>General system endpoints:</p>
+
+    <div class="api-endpoint method-get">
+        <h4>GET /health</h4>
+        <p>System health check</p>
+        <strong>Response:</strong>
+        <pre><code>{
+  "status": "healthy",
+  "message": "School Bus Tracking API is running"
+}</code></pre>
+    </div>
+
+    <div class="api-endpoint method-post">
+        <h4>POST /admin/create-admin</h4>
+        <p>Create initial admin account (only works if no admin exists)</p>
+        <strong>Request Body:</strong>
+        <pre><code>{
+  "username": "admin",
+  "password": "adminpassword"
+}</code></pre>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📊 Status Codes</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>passed</strong></td><td>Bus has already passed this station</td></tr>
+            <tr><td><strong>approaching</strong></td><td>Bus is within 1km of the station</td></tr>
+            <tr><td><strong>waiting</strong></td><td>Bus has not yet reached the station</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>🧮 ETA Calculation</h2>
+    <p>The system calculates Estimated Time of Arrival (ETA) using:</p>
+    <ul style="line-height: 2;">
+        <li><strong>Haversine Formula:</strong> For accurate distance calculation between GPS coordinates</li>
+        <li><strong>Average Speed:</strong> Configurable bus speed (default: 30 km/h)</li>
+        <li><strong>Route Consideration:</strong> Takes into account station order and route progression</li>
+        <li><strong>Real-time Updates:</strong> ETA updates automatically as bus location changes</li>
+    </ul>
+</div>
+{% endblock %}

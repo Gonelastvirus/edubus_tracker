@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - School Bus Tracking{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🏠 System Dashboard</h2>
+    <p>Welcome to the School Bus Tracking System. Choose an option below to get started:</p>
+</div>
+
+<div class="grid">
+    <div class="card feature-card">
+        <div class="feature-icon">👨‍💼</div>
+        <h3>Admin Panel</h3>
+        <p>Manage buses, stations, and students. Create and configure the entire tracking system.</p>
+        <a href="/gui/admin" class="btn" style="margin-top: 20px;">Access Admin Panel</a>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">🎓</div>
+        <h3>Student Dashboard</h3>
+        <p>View real-time bus locations, station status, and estimated arrival times.</p>
+        <a href="/gui/student" class="btn" style="margin-top: 20px;">Student View</a>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">🚌</div>
+        <h3>Bus Simulator</h3>
+        <p>Simulate GPS updates from bus hardware for testing and demonstration purposes.</p>
+        <a href="/gui/bus-simulator" class="btn" style="margin-top: 20px;">Open Simulator</a>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">📚</div>
+        <h3>API Documentation</h3>
+        <p>Complete API reference with endpoints, parameters, and example requests.</p>
+        <a href="/gui/api-docs" class="btn" style="margin-top: 20px;">View API Docs</a>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Interactive API</h3>
+        <p>Test API endpoints directly with Swagger UI interactive documentation.</p>
+        <a href="/docs" class="btn" style="margin-top: 20px;" target="_blank">Open Swagger UI</a>
+    </div>
+
+    <div class="card feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>System Status</h3>
+        <p>Monitor system health, API status, and real-time tracking performance.</p>
+        <a href="/health" class="btn" style="margin-top: 20px;" target="_blank">Check Health</a>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🚀 Quick Start Guide</h2>
+    <ol style="line-height: 2; color: #555;">
+        <li><strong>Create Admin Account:</strong> Use the Admin Panel to create your first administrator account</li>
+        <li><strong>Add Buses:</strong> Register school buses with driver information</li>
+        <li><strong>Create Stations:</strong> Define bus stops with GPS coordinates and route order</li>
+        <li><strong>Add Students:</strong> Register students and assign them to buses and stations</li>
+        <li><strong>Test Tracking:</strong> Use the Bus Simulator to send GPS updates and test the system</li>
+        <li><strong>Student Access:</strong> Students can now track their bus in real-time</li>
+    </ol>
+</div>
+{% endblock %}

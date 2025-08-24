@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - School Bus Tracking{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>👨‍💼 Admin Management Panel</h2>
+    <p>Manage all aspects of the school bus tracking system from this central dashboard.</p>
+</div>
+
+<!-- Create Admin Section -->
+<div class="card">
+    <h2>🔐 Create Admin Account</h2>
+    <form method="post" action="/gui/admin/create-admin">
+        <div class="form-group">
+            <label for="admin_username">Admin Username:</label>
+            <input type="text" id="admin_username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="admin_password">Admin Password:</label>
+            <input type="password" id="admin_password" name="password" required>
+        </div>
+        <button type="submit" class="btn">Create Admin</button>
+    </form>
+</div>
+
+<div class="grid">
+    <!-- Bus Management -->
+    <div class="card">
+        <h2>🚌 Bus Management</h2>
+        <form method="post" action="/gui/admin/create-bus">
+            <div class="form-group">
+                <label for="bus_number">Bus Number:</label>
+                <input type="text" id="bus_number" name="bus_number" required>
+            </div>
+            <div class="form-group">
+                <label for="driver_name">Driver Name:</label>
+                <input type="text" id="driver_name" name="driver_name" required>
+            </div>
+            <div class="form-group">
+                <label for="driver_phone">Driver Phone:</label>
+                <input type="tel" id="driver_phone" name="driver_phone" required>
+            </div>
+            <button type="submit" class="btn">Add Bus</button>
+        </form>
+
+        <h3>Existing Buses</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Bus Number</th>
+                    <th>Driver</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bus in buses %}
+                <tr>
+                    <td>{{ bus.id }}</td>
+                    <td>{{ bus.bus_number }}</td>
+                    <td>{{ bus.driver_name }}</td>
+                    <td>{{ bus.driver_phone }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Station Management -->
+    <div class="card">
+        <h2>📍 Station Management</h2>
+        <form method="post" action="/gui/admin/create-station">
+            <div class="form-group">
+                <label for="station_name">Station Name:</label>
+                <input type="text" id="station_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" name="latitude" step="any" required>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" name="longitude" step="any" required>
+            </div>
+            <div class="form-group">
+                <label for="bus_id">Assign to Bus:</label>
+                <select id="bus_id" name="bus_id" required>
+                    <option value="">Select Bus</option>
+                    {% for bus in buses %}
+                    <option value="{{ bus.id }}">{{ bus.bus_number }} - {{ bus.driver_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="order_number">Order Number:</label>
+                <input type="number" id="order_number" name="order_number" required>
+            </div>
+            <button type="submit" class="btn">Add Station</button>
+        </form>
+
+        <h3>Existing Stations</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Bus ID</th>
+                    <th>Order</th>
+                    <th>Coordinates</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for station in stations %}
+                <tr>
+                    <td>{{ station.id }}</td>
+                    <td>{{ station.name }}</td>
+                    <td>{{ station.bus_id }}</td>
+                    <td>{{ station.order_number }}</td>
+                    <td>{{ "%.4f"|format(station.latitude) }}, {{ "%.4f"|format(station.longitude) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Student Management -->
+<div class="card">
+    <h2>🎓 Student Management</h2>
+    <form method="post" action="/gui/admin/create-student">
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="form-group">
+                <label for="student_name">Student Name:</label>
+                <input type="text" id="student_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="student_username">Username:</label>
+                <input type="text" id="student_username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="student_password">Password:</label>
+                <input type="password" id="student_password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="assigned_bus_id">Assign to Bus:</label>
+                <select id="assigned_bus_id" name="assigned_bus_id">
+                    <option value="">Select Bus (Optional)</option>
+                    {% for bus in buses %}
+                    <option value="{{ bus.id }}">{{ bus.bus_number }} - {{ bus.driver_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="assigned_station_id">Assign to Station:</label>
+                <select id="assigned_station_id" name="assigned_station_id">
+                    <option value="">Select Station (Optional)</option>
+                    {% for station in stations %}
+                    <option value="{{ station.id }}">{{ station.name }} (Bus {{ station.bus_id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn">Add Student</button>
+    </form>
+
+    <h3>Existing Students</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Assigned Bus</th>
+                <th>Assigned Station</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.username }}</td>
+                <td>{{ student.assigned_bus_id or 'Not Assigned' }}</td>
+                <td>{{ student.assigned_station_id or 'Not Assigned' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

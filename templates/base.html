@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}School Bus Tracking System{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚌 School Bus Tracking System</h1>
+            <p>Real-time GPS tracking and management system</p>
+            <div class="nav">
+                <a href="/gui" class="nav-btn">🏠 Dashboard</a>
+                <a href="/gui/admin" class="nav-btn">👨‍💼 Admin Panel</a>
+                <a href="/gui/student" class="nav-btn">🎓 Student View</a>
+                <a href="/gui/bus-simulator" class="nav-btn">🚌 Bus Simulator</a>
+                <a href="/gui/api-docs" class="nav-btn">📚 API Docs</a>
+                <a href="/docs" class="nav-btn" target="_blank">🔧 Swagger UI</a>
+            </div>
+        </div>
+
+        {% if request.query_params.get('success') %}
+        <div class="alert alert-success">
+            ✅ {{ request.query_params.get('success') }}
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('error') %}
+        <div class="alert alert-error">
+            ❌ {{ request.query_params.get('error') }}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

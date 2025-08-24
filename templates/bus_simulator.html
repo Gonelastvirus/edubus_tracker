@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Bus Simulator - School Bus Tracking{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🚌 Bus GPS Simulator</h2>
+    <p>Simulate GPS updates from bus hardware for testing purposes. This mimics the Arduino hardware sending location data.</p>
+</div>
+
+<div class="card">
+    <h2>📡 Send GPS Update</h2>
+    <form method="post" action="/gui/bus-simulator/update">
+        <div class="form-group">
+            <label for="bus_id">Select Bus:</label>
+            <select id="bus_id" name="bus_id" required>
+                <option value="">Choose a bus</option>
+                {% for bus in buses %}
+                <option value="{{ bus.id }}">{{ bus.bus_number }} - {{ bus.driver_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="latitude">Latitude:</label>
+            <input type="number" id="latitude" name="latitude" step="any" required placeholder="e.g., 40.7128">
+        </div>
+        <div class="form-group">
+            <label for="longitude">Longitude:</label>
+            <input type="number" id="longitude" name="longitude" step="any" required placeholder="e.g., -74.0060">
+        </div>
+        <button type="submit" class="btn">📍 Update Bus Location</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>🗺️ Quick Location Presets</h2>
+    <p>Click on a preset location to quickly test different scenarios:</p>
+    <div class="grid">
+        <button class="btn" onclick="setLocation(40.7128, -74.0060)">🏙️ New York City</button>
+        <button class="btn" onclick="setLocation(34.0522, -118.2437)">🌴 Los Angeles</button>
+        <button class="btn" onclick="setLocation(41.8781, -87.6298)">🏢 Chicago</button>
+        <button class="btn" onclick="setLocation(29.7604, -95.3698)">🚀 Houston</button>
+        <button class="btn" onclick="setLocation(33.4484, -112.0740)">🌵 Phoenix</button>
+        <button class="btn" onclick="setLocation(39.9526, -75.1652)">🔔 Philadelphia</button>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📊 API Testing</h2>
+    <p>You can also test the bus location API directly using curl or any HTTP client:</p>
+    <div class="api-endpoint">
+        <h4>POST /bus/update</h4>
+        <pre><code>{
+  "bus_id": 1,
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "timestamp": "2025-01-09T10:30:00Z"
+}</code></pre>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🔄 Auto-Simulation</h2>
+    <p>Simulate a moving bus along a route:</p>
+    <div class="form-group">
+        <label for="auto_bus_id">Select Bus for Auto-Simulation:</label>
+        <select id="auto_bus_id">
+            <option value="">Choose a bus</option>
+            {% for bus in buses %}
+            <option value="{{ bus.id }}">{{ bus.bus_number }} - {{ bus.driver_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn" onclick="startAutoSimulation()">▶️ Start Auto-Simulation</button>
+    <button class="btn btn-danger" onclick="stopAutoSimulation()">⏹️ Stop Auto-Simulation</button>
+    <div id="simulation_status"></div>
+</div>
+
+<script>
+function setLocation(lat, lng) {
+    document.getElementById('latitude').value = lat;
+    document.getElementById('longitude').value = lng;
+}
+
+let simulationInterval;
+let currentLat = 40.7128;
+let currentLng = -74.0060;
+
+function startAutoSimulation() {
+    const busId = document.getElementById('auto_bus_id').value;
+    if (!busId) {
+        alert('Please select a bus for auto-simulation');
+        return;
+    }
+
+    if (simulationInterval) {
+        clearInterval(simulationInterval);
+    }
+
+    document.getElementById('simulation_status').innerHTML = '<p style="color: green;">🟢 Auto-simulation running...</p>';
+
+    simulationInterval = setInterval(async () => {
+        // Simulate movement by slightly changing coordinates
+        currentLat += (Math.random() - 0.5) * 0.001;
+        currentLng += (Math.random() - 0.5) * 0.001;
+
+        try {
+            const response = await fetch('/bus/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bus_id: parseInt(busId),
+                    latitude: currentLat,
+                    longitude: currentLng,
+                    timestamp: new Date().toISOString()
+                })
+            });
+
+            if (response.ok) {
+                console.log('Location updated:', currentLat, currentLng);
+            }
+        } catch (error) {
+            console.error('Error updating location:', error);
+        }
+    }, 5000); // Update every 5 seconds
+}
+
+function stopAutoSimulation() {
+    if (simulationInterval) {
+        clearInterval(simulationInterval);
+        simulationInterval = null;
+        document.getElementById('simulation_status').innerHTML = '<p style="color: red;">🔴 Auto-simulation stopped</p>';
+    }
+}
+
+// Get current location if available
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        document.getElementById('latitude').placeholder = `Current: ${position.coords.latitude.toFixed(4)}`;
+        document.getElementById('longitude').placeholder = `Current: ${position.coords.longitude.toFixed(4)}`;
+    });
+}
+</script>
+{% endblock %}

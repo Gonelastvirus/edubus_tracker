@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - School Bus Tracking{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🎓 Student Dashboard</h2>
+    <p>Track your school bus in real-time and get estimated arrival times.</p>
+</div>
+
+<div class="card">
+    <h2>🚌 Select Your Bus</h2>
+    <div class="form-group">
+        <label for="bus_select">Choose Bus:</label>
+        <select id="bus_select" onchange="loadBusData()">
+            <option value="">Select a bus to track</option>
+            {% for bus in buses %}
+            <option value="{{ bus.id }}">{{ bus.bus_number }} - {{ bus.driver_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div id="bus_info" style="display: none;">
+    <div class="card">
+        <h2>🚌 Bus Information</h2>
+        <div id="bus_details"></div>
+    </div>
+
+    <div class="card">
+        <h2>📍 Station Status</h2>
+        <div id="stations_list"></div>
+    </div>
+
+    <div class="card">
+        <h2>🗺️ Current Location</h2>
+        <div id="location_info"></div>
+    </div>
+</div>
+
+<script>
+async function loadBusData() {
+    const busSelect = document.getElementById('bus_select');
+    const busId = busSelect.value;
+    
+    if (!busId) {
+        document.getElementById('bus_info').style.display = 'none';
+        return;
+    }
+
+    try {
+        // Load bus information
+        const busResponse = await fetch(`/student/bus/${busId}`, {
+            headers: {
+                'Authorization': 'Bearer demo-token' // In real app, use actual JWT
+            }
+        });
+        
+        if (busResponse.ok) {
+            const busData = await busResponse.json();
+            document.getElementById('bus_details').innerHTML = `
+                <p><strong>Bus Number:</strong> ${busData.bus_number}</p>
+                <p><strong>Driver:</strong> ${busData.driver_name}</p>
+                <p><strong>Phone:</strong> ${busData.driver_phone}</p>
+            `;
+        }
+
+        // Load stations with status
+        const stationsResponse = await fetch(`/student/stations/${busId}`, {
+            headers: {
+                'Authorization': 'Bearer demo-token' // In real app, use actual JWT
+            }
+        });
+        
+        if (stationsResponse.ok) {
+            const stationsData = await stationsResponse.json();
+            let stationsHtml = '<table class="table"><thead><tr><th>Station</th><th>Status</th><th>ETA</th><th>Coordinates</th></tr></thead><tbody>';
+            
+            stationsData.forEach(station => {
+                const statusClass = `status-${station.status}`;
+                const eta = station.eta_minutes ? `${station.eta_minutes} min` : 'N/A';
+                stationsHtml += `
+                    <tr>
+                        <td>${station.name}</td>
+                        <td><span class="status-badge ${statusClass}">${station.status}</span></td>
+                        <td>${eta}</td>
+                        <td>${station.latitude.toFixed(4)}, ${station.longitude.toFixed(4)}</td>
+                    </tr>
+                `;
+            });
+            
+            stationsHtml += '</tbody></table>';
+            document.getElementById('stations_list').innerHTML = stationsHtml;
+        }
+
+        // Load current location
+        const locationResponse = await fetch(`/student/bus/${busId}/location`, {
+            headers: {
+                'Authorization': 'Bearer demo-token' // In real app, use actual JWT
+            }
+        });
+        
+        if (locationResponse.ok) {
+            const locationData = await locationResponse.json();
+            if (locationData) {
+                document.getElementById('location_info').innerHTML = `
+                    <p><strong>Latitude:</strong> ${locationData.latitude}</p>
+                    <p><strong>Longitude:</strong> ${locationData.longitude}</p>
+                    <p><strong>Last Updated:</strong> ${new Date(locationData.timestamp).toLocaleString()}</p>
+                `;
+            } else {
+                document.getElementById('location_info').innerHTML = '<p>No location data available</p>';
+            }
+        }
+
+        document.getElementById('bus_info').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading bus data:', error);
+        document.getElementById('bus_info').innerHTML = '<div class="alert alert-error">Error loading bus data. Please try again.</div>';
+        document.getElementById('bus_info').style.display = 'block';
+    }
+}
+
+// Auto-refresh data every 30 seconds
+setInterval(() => {
+    const busSelect = document.getElementById('bus_select');
+    if (busSelect.value) {
+        loadBusData();
+    }
+}, 30000);
+</script>
+{% endblock %}
